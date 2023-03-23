@@ -1,53 +1,44 @@
 import PropTypes from 'prop-types';
 import Modal from 'components/Modal';
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import {
   StyledImageGalleryItem,
   StyledImageGalleryItemImg,
 } from './ImageGalleryItem.styled';
 
-export default class ImageGalleryItem extends Component {
-  static propTypes = {
-    src: PropTypes.string.isRequired,
-    alt: PropTypes.string.isRequired,
-    srcOriginal: PropTypes.string.isRequired,
-    images: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+const ImageGalleryItem = ({ src, alt, srcOriginal }) => {
+  const [isOpenModal, setIsOpenModal] = useState(false);
+  const [currentImg, setCurrentImg] = useState(null);
+
+  const handlerCurrentImg = src => {
+    setCurrentImg(src);
+    setIsOpenModal(true);
   };
 
-  state = {
-    isOpenModal: false,
-    currentImg: null,
+  const onCloseModal = () => {
+    setIsOpenModal(false);
   };
 
-  handlerCurrentImg = src => {
-    this.setState({
-      currentImg: src,
-      isOpenModal: true,
-    });
-  };
+  return (
+    <StyledImageGalleryItem>
+      <StyledImageGalleryItemImg
+        src={src}
+        alt={alt}
+        onClick={() => handlerCurrentImg(srcOriginal)}
+      />
+      {isOpenModal && (
+        <Modal onCloseModal={onCloseModal}>
+          <img src={currentImg} alt={alt} width="1000" />
+        </Modal>
+      )}
+    </StyledImageGalleryItem>
+  );
+};
 
-  onCloseModal = () => {
-    this.setState({
-      isOpenModal: false,
-    });
-  };
+ImageGalleryItem.propTypes = {
+  src: PropTypes.string.isRequired,
+  alt: PropTypes.string.isRequired,
+  srcOriginal: PropTypes.string.isRequired,
+};
 
-  render() {
-    const { src, alt, srcOriginal } = this.props;
-
-    return (
-      <StyledImageGalleryItem>
-        <StyledImageGalleryItemImg
-          src={src}
-          alt={alt}
-          onClick={() => this.handlerCurrentImg()}
-        />
-        {this.state.isOpenModal && (
-          <Modal onCloseModal={this.onCloseModal}>
-            <img src={srcOriginal} alt={alt} width="1000" />
-          </Modal>
-        )}
-      </StyledImageGalleryItem>
-    );
-  }
-}
+export default ImageGalleryItem;
